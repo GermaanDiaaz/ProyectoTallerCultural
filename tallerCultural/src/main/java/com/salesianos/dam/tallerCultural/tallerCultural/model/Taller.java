@@ -1,14 +1,14 @@
 package com.salesianos.dam.tallerCultural.tallerCultural.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +23,10 @@ public class Taller {
     private String titulo;
     private LocalDateTime fechaHoraInicio;
     private LocalDateTime fechaHoraFin;
+
+    @ManyToOne
+    private Organizador organizador;
+
+    @ManyToMany
+    private List<Participante> participantes = new ArrayList<>();
 }
