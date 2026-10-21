@@ -9,8 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -25,5 +25,5 @@ public class Participante {
     private String nombreCompleto;
 
     @ManyToMany
-    private List<Taller> talleres = new ArrayList<>();
+    private Set<Taller> talleres = new HashSet<>();
 }
