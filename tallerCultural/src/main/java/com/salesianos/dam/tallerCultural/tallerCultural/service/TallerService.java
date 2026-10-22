@@ -2,8 +2,12 @@ package com.salesianos.dam.tallerCultural.tallerCultural.service;
 
 
 import com.salesianos.dam.tallerCultural.tallerCultural.dto.EditTallerDto;
+import com.salesianos.dam.tallerCultural.tallerCultural.error.ParticipanteYaInscritoException;
+import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.ParticipanteNotFoundException;
 import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.TallerNotFoundException;
+import com.salesianos.dam.tallerCultural.tallerCultural.model.Participante;
 import com.salesianos.dam.tallerCultural.tallerCultural.model.Taller;
+import com.salesianos.dam.tallerCultural.tallerCultural.repo.ParticipanteRepository;
 import com.salesianos.dam.tallerCultural.tallerCultural.repo.TallerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import java.util.List;
 public class TallerService {
 
     private final TallerRepository tallerRepository;
+    private final ParticipanteRepository participanteRepository;
 
     public List<Taller> getAllTalleres() {
         List<Taller> result = tallerRepository.findAll();
@@ -50,5 +55,33 @@ public class TallerService {
             throw new TallerNotFoundException(id);
         }
         tallerRepository.deleteById(id);
+    }
+
+    public Taller inscribirParticipante(Long tallerId, Long participanteId) {
+        Taller t = getTallerById(tallerId);
+        Participante participante = participanteRepository.findById(participanteId)
+                .orElseThrow(() -> new ParticipanteNotFoundException(participanteId));
+
+        if (t.getParticipantes().contains(participante)) {
+            throw new ParticipanteYaInscritoException("El participante ya está inscrito en este taller");
+        }
+
+        t.addParticipante(participante);
+        return tallerRepository.save(t);
+    }
+
+    public List<Participante> getParticipantesTaller(Long tallerId) {
+        Taller t = getTallerById(tallerId);
+        return t.getParticipantes();
+    }
+
+    public void eliminarInscripcion(Long tallerId, Long participanteId) {
+        Taller t = tallerRepository.findById(tallerId).orElse(null);
+        Participante participante = participanteRepository.findById(participanteId).orElse(null);
+
+        if (t != null && participante != null && t.getParticipantes().contains(participante)) {
+            t.removeParticipante(participante);
+            tallerRepository.save(t);
+        }
     }
 }

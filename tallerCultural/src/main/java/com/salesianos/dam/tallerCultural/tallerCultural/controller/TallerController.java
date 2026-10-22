@@ -66,5 +66,27 @@ public class TallerController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("{tallerId}/participantes/{participanteId}")
+    public ResponseEntity<GetTallerDetail> inscribirParticipante(@PathVariable Long tallerId,
+            @PathVariable Long participanteId) {
+        return ResponseEntity.status(201)
+                .body(GetTallerDetail.of(tallerService.inscribirParticipante(tallerId, participanteId)));
+    }
+
+    @GetMapping("{tallerId}/participantes")
+    public ResponseEntity<List<GetParticipanteDetail>> getParticipantesDeTaller(@PathVariable Long tallerId) {
+        return ResponseEntity.ok(
+                tallerService.getParticipantesTaller(tallerId)
+                        .stream()
+                        .map(GetParticipanteDetail::of)
+                        .toList());
+    }
+
+    @DeleteMapping("/{tallerId}/participantes/{participanteId}")
+    public ResponseEntity<Void> eliminarInscripcion(@PathVariable Long tallerId,
+            @PathVariable Long participanteId) {
+        tallerService.eliminarInscripcion(tallerId, participanteId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

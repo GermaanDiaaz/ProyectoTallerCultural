@@ -4,10 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +21,8 @@ public class Participante {
 
     private String nombreCompleto;
 
-    @ManyToMany
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "participantes")
     private Set<Taller> talleres = new HashSet<>();
 }
