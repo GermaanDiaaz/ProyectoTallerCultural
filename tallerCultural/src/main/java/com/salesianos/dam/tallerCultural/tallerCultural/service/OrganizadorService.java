@@ -1,6 +1,7 @@
 package com.salesianos.dam.tallerCultural.tallerCultural.service;
 
 import com.salesianos.dam.tallerCultural.tallerCultural.dto.EditOrganizadorDto;
+import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.OrganizadorNotFoundException;
 import com.salesianos.dam.tallerCultural.tallerCultural.model.Organizador;
 import com.salesianos.dam.tallerCultural.tallerCultural.repo.OrganizadorRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +18,14 @@ public class OrganizadorService {
     public List<Organizador> getAllOrganizadores() {
         List<Organizador> result = organizadorRepository.findAll();
         if (result.isEmpty()) {
-            throw new RuntimeException("No hay organizadores");
+            throw new OrganizadorNotFoundException();
         }
         return result;
     }
 
     public Organizador getOrganizadorById(Long id) {
         return organizadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Organizador no encontrado con id: " + id));
+                .orElseThrow(() -> new OrganizadorNotFoundException(id));
     }
 
     public Organizador addOrganizador(EditOrganizadorDto editOrganizadorDto) {
@@ -39,10 +40,13 @@ public class OrganizadorService {
                     o.setEmail(editOrganizadorDto.email());
                     return organizadorRepository.save(o);
                 })
-                .orElseThrow(() -> new RuntimeException("Organizador no encontrado con id: " + id));
+                .orElseThrow(() -> new OrganizadorNotFoundException(id));
     }
 
     public void deleteOrganizador(Long id) {
+        if (!organizadorRepository.existsById(id)) {
+            throw new OrganizadorNotFoundException(id);
+        }
         organizadorRepository.deleteById(id);
     }
 }

@@ -2,6 +2,7 @@ package com.salesianos.dam.tallerCultural.tallerCultural.service;
 
 
 import com.salesianos.dam.tallerCultural.tallerCultural.dto.EditTallerDto;
+import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.TallerNotFoundException;
 import com.salesianos.dam.tallerCultural.tallerCultural.model.Taller;
 import com.salesianos.dam.tallerCultural.tallerCultural.repo.TallerRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,14 @@ public class TallerService {
     public List<Taller> getAllTalleres() {
         List<Taller> result = tallerRepository.findAll();
         if (result.isEmpty()) {
-            throw new RuntimeException("No hay talleres");
+            throw new TallerNotFoundException();
         }
         return result;
     }
 
     public Taller getTallerById(Long id) {
         return tallerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Taller no encontrado con id: " + id));
+                .orElseThrow(() -> new TallerNotFoundException(id));
     }
 
     public Taller addTaller(EditTallerDto editTallerDto) {
@@ -41,10 +42,13 @@ public class TallerService {
                     t.setFechaHoraFin(editTallerDto.fechaHoraFin());
                     return tallerRepository.save(t);
                 })
-                .orElseThrow(() -> new RuntimeException("Taller no encontrado con id: " + id));
+                .orElseThrow(() -> new TallerNotFoundException(id));
     }
 
     public void deleteTaller(Long id) {
+        if (!tallerRepository.existsById(id)) {
+            throw new TallerNotFoundException(id);
+        }
         tallerRepository.deleteById(id);
     }
 }
