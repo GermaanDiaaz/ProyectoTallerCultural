@@ -70,17 +70,11 @@ public class DataSeed {
                 .build();
 
 
-        t1.getParticipantes().add(p1);
-        p1.getTalleres().add(t1);
+        t1.addParticipante(p1);
+        t1.addParticipante(p2);
 
-        t1.getParticipantes().add(p2);
-        p2.getTalleres().add(t1);
-
-        t2.getParticipantes().add(p2);
-        p2.getTalleres().add(t2);
-
-        t2.getParticipantes().add(p3);
-        p3.getTalleres().add(t2);
+        t2.addParticipante(p2);
+        t2.addParticipante(p3);
 
         tallerRepository.saveAll(List.of(t1, t2));
     }

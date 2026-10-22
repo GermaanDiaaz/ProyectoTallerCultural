@@ -10,7 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,8 +22,7 @@ public class Participante {
 
     private String nombreCompleto;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
+    @Builder.Default
     @ManyToMany(mappedBy = "participantes")
     private Set<Taller> talleres = new HashSet<>();
 }

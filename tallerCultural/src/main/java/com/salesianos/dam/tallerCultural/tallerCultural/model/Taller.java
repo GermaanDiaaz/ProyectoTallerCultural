@@ -1,17 +1,15 @@
 package com.salesianos.dam.tallerCultural.tallerCultural.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,14 +25,14 @@ public class Taller {
     @ManyToOne
     private Organizador organizador;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "taller_participante",
             joinColumns = @JoinColumn(name = "taller_id"),
             inverseJoinColumns = @JoinColumn(name = "participante_id")
     )
-    private List<Participante> participantes = new ArrayList<>();
-
+    private Set<Participante> participantes = new HashSet<>();
     public void addParticipante(Participante p) {
         this.participantes.add(p);
         p.getTalleres().add(this);

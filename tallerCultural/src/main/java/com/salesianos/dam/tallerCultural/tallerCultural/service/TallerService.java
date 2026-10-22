@@ -3,6 +3,7 @@ package com.salesianos.dam.tallerCultural.tallerCultural.service;
 
 import com.salesianos.dam.tallerCultural.tallerCultural.dto.EditTallerDto;
 import com.salesianos.dam.tallerCultural.tallerCultural.error.ParticipanteYaInscritoException;
+import com.salesianos.dam.tallerCultural.tallerCultural.error.TallerYaExisteException;
 import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.ParticipanteNotFoundException;
 import com.salesianos.dam.tallerCultural.tallerCultural.error.notfound.TallerNotFoundException;
 import com.salesianos.dam.tallerCultural.tallerCultural.model.Participante;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +37,33 @@ public class TallerService {
     }
 
     public Taller addTaller(EditTallerDto editTallerDto) {
+        String titulo = editTallerDto.titulo().trim();
+
+        if (editTallerDto.fechaHoraFin().isBefore(editTallerDto.fechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio");
+        }
+
+        if (tallerRepository.existsByTituloIgnoreCase(titulo)) {
+            throw new TallerYaExisteException("Ya existe un taller con el título: " + titulo);
+        }
+
         Taller t = editTallerDto.to();
         return tallerRepository.save(t);
     }
 
+
+
     public Taller updateTaller(Long id, EditTallerDto editTallerDto) {
+        String nuevoTitulo = editTallerDto.titulo().trim();
+
+        if (editTallerDto.fechaHoraFin().isBefore(editTallerDto.fechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio");
+        }
+
+        if (!getTallerById(id).getTitulo().equalsIgnoreCase(nuevoTitulo)
+                && tallerRepository.existsByTituloIgnoreCase(nuevoTitulo)) {
+            throw new TallerYaExisteException("Ya existe otro taller con el título: " + nuevoTitulo);
+        }
         return tallerRepository.findById(id)
                 .map(t -> {
                     t.setTitulo(editTallerDto.titulo());
@@ -70,7 +94,7 @@ public class TallerService {
         return tallerRepository.save(t);
     }
 
-    public List<Participante> getParticipantesTaller(Long tallerId) {
+    public Set<Participante> getParticipantesTaller(Long tallerId) {
         Taller t = getTallerById(tallerId);
         return t.getParticipantes();
     }
